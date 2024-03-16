@@ -56,7 +56,7 @@ public class AppPanel extends JPanel implements ActionListener, Subscriber{
         JMenuBar result = new JMenuBar();
         JMenu fileMenu = Utilities.makeMenu("File", new String[]{"New", "Save", "Open", "Quit"}, this);
         result.add(fileMenu);
-        JMenu editMenu = Utilities.makeMenu("Edit", new String[]{factory.getEditCommand()}, this);
+        JMenu editMenu = Utilities.makeMenu("Edit", new String[]{factory.getEditCommands()}, this);
         result.add(editMenu);
         JMenu helpMenu = Utilities.makeMenu("Help", new String[]{"About", "Help"}, this);
         result.add(helpMenu);
@@ -65,10 +65,11 @@ public class AppPanel extends JPanel implements ActionListener, Subscriber{
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        String commandName = e.getActionCommand();
-        Command command = factory.makeEditCommand(commandName);
 
         try {
+            String commandName = e.getActionCommand();
+            Command command = factory.makeEditCommand(commandName);
+
             if (factory.getEditCommand().equals(commandName)) {
                 command.execute();
             } else if ("Save".equals(commandName)) {
@@ -92,10 +93,7 @@ public class AppPanel extends JPanel implements ActionListener, Subscriber{
             } else if ("About".equals(commandName)) {
                 factory.about();
             } else if ("Help".equals(commandName)) {
-                String[] cmmds = new String[]{
-                        factory.getHelp(),
-                };
-                Utilities.inform(cmmds);
+                Utilities.inform(factory.getHelp());
             } else {
                 throw new Exception("Unrecognized command: " + commandName);
             }
