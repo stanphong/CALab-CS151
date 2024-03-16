@@ -3,10 +3,7 @@ package mvcapps.mvc;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
+
 import mvcapps.tools.*;
 import javax.swing.*;
 
@@ -52,11 +49,13 @@ public class AppPanel extends JPanel implements ActionListener, Subscriber{
         view.setModel(this.model);
     }
 
+    public Model getModel() { return model; }
+
     protected JMenuBar createMenuBar() {
         JMenuBar result = new JMenuBar();
         JMenu fileMenu = Utilities.makeMenu("File", new String[]{"New", "Save", "Open", "Quit"}, this);
         result.add(fileMenu);
-        JMenu editMenu = Utilities.makeMenu("Edit", new String[]{factory.getEditCommand()}, this);
+        JMenu editMenu = Utilities.makeMenu("Edit", factory.getEditCommands(), this);
         result.add(editMenu);
         JMenu helpMenu = Utilities.makeMenu("Help", new String[]{"About", "Help"}, this);
         result.add(helpMenu);
@@ -65,47 +64,49 @@ public class AppPanel extends JPanel implements ActionListener, Subscriber{
 
     @Override
     public void actionPerformed(ActionEvent e) {
-
         try {
-            String commandName = e.getActionCommand();
-            Command command = factory.makeEditCommand(commandName);
+            String cmmd = e.getActionCommand();
+            Command command = factory.makeEditCommand(model,cmmd,this);
 
-            if (factory.getEditCommand().equals(commandName)) {
-                command.execute();
-            } else if ("Save".equals(commandName)) {
-                String fName = Utilities.getFileName((String) null, false);
-                ObjectOutputStream os = new ObjectOutputStream(new FileOutputStream(fName));
-                os.writeObject(model);
-                os.close();
-            } else if ("Open".equals(commandName)) {
-                if (Utilities.confirm("Are you sure? Unsaved changes will be lost!")) {
-                    String fName = Utilities.getFileName((String) null, true);
-                    ObjectInputStream is = new ObjectInputStream(new FileInputStream(fName));
-                    model = (Model) is.readObject();
-                    view.setModel(model);
-                    is.close();
-                }
-            } else if ("New".equals(commandName)) {
-                model = new Model();
-                view.setModel(model);
-            } else if ("Quit".equals(commandName)) {
+            if (cmmd.equals(command)){
+
+            } else if (cmmd.equals("Save")) {
+                Utilities.save(model, false);
+            } else if (cmmd.equals("SaveAs")) {
+                Utilities.save(model, true);
+            } else if (cmmd.equals("Open")) {
+                Model newModel = Utilities.open(model);
+                if (newModel != null) setModel(newModel);
+            } else if (cmmd.equals("New")) {
+                Utilities.saveChanges(model);
+                setModel(factory.makeModel());
+                model.setUnsavedChanges(false);
+            } else if (cmmd.equals("Quit")) {
+                Utilities.saveChanges(model);
                 System.exit(0);
-            } else if ("About".equals(commandName)) {
-                factory.about();
-            } else if ("Help".equals(commandName)) {
+            } else if (cmmd.equals("About")) {
+                Utilities.inform(factory.about());
+            } else if (cmmd.equals("Help")) {
                 Utilities.inform(factory.getHelp());
             } else {
-                throw new Exception("Unrecognized command: " + commandName);
+                if (command != null) {
+                    command.execute();
+                } else {
+                    Utilities.error("Command not recognized: " + cmmd);
+                }
             }
         } catch (Exception ex) {
-            Utilities.error(ex);
+            handleException(ex);
         }
+    }
 
+    protected void handleException(Exception e) {
+        Utilities.error(e);
     }
 
     @Override
     public void update() throws Exception {
-
+        view.repaint();
     }
 
 }
