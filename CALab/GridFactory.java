@@ -1,5 +1,6 @@
 package CALab;
 
+import Life.Society;
 import mvc.AppFactory;
 import mvc.Command;
 import mvc.Model;
@@ -10,7 +11,7 @@ public class GridFactory implements AppFactory {
 
     @Override
     public Model makeModel() {
-        return new Grid();
+        return new Society();
     }
 
     @Override
