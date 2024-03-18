@@ -4,10 +4,9 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-import mvcapps.tools.*;
 import javax.swing.*;
 
-public class AppPanel extends JPanel implements ActionListener, Subscriber{
+public class AppPanel extends JPanel implements Subscriber, ActionListener{
     protected Model model;
     protected View view;
     protected JPanel ControlPanel;
@@ -49,6 +48,7 @@ public class AppPanel extends JPanel implements ActionListener, Subscriber{
         view.setModel(this.model);
     }
 
+
     public Model getModel() { return model; }
 
     protected JMenuBar createMenuBar() {
@@ -68,9 +68,7 @@ public class AppPanel extends JPanel implements ActionListener, Subscriber{
             String cmmd = e.getActionCommand();
             Command command = factory.makeEditCommand(model,cmmd,this);
 
-            if (cmmd.equals(command)){
-
-            } else if (cmmd.equals("Save")) {
+            if (cmmd.equals("Save")) {
                 Utilities.save(model, false);
             } else if (cmmd.equals("SaveAs")) {
                 Utilities.save(model, true);
