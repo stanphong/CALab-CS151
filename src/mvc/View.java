@@ -11,6 +11,10 @@ public class View extends JPanel implements Subscriber{
     }
     @Override
     public void update() {
-
+        repaint();
+    }
+    public void setModel(Model m){
+        this.model = m;
+        m.subscribe(this);
     }
 }

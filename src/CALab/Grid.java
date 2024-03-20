@@ -26,9 +26,18 @@ public abstract class Grid extends Model {
     protected void populate() {
         // 1. use makeCell to fill in cells
         // 2. use getNeighbors to set the neighbors field of each cell
-        for (Cell[] cellRow : cells) {
+        for (int i = 0; i < cells.length; i ++){
+            for (int j = 0; j < cells.length; j ++){
+                Cell cell = this.makeCell(true);
+                cells[i][j] = cell;
+                cell.myGrid = this;
+                cell.row = i;
+                cell.col = j;
+            }
+        }
+
+        for (Cell[] cellRow: cells){
             for (Cell cell : cellRow){
-                cell = this.makeCell(true);
                 cell.neighbors = this.getNeighbors(cell, 1);
             }
         }
@@ -70,69 +79,69 @@ public abstract class Grid extends Model {
         cCol = (cCol - radius) >= 0 ? cCol - radius : cCol - radius + this.getDim();
         neighbor.add(cells[cRow][cCol]);
 
-//        //leftBar
-//        int i = cRow;
-//        int n = 0;
-//        while(n < 2 * radius)
-//        {
-//            if (i >= this.getDim()) i -= this.getDim();
-//            neighbor.add(cells[i][cCol]);
-//            i++;
-//            n++;
-//        }
-//
-//        //topBar
-//        i = cCol;
-//        n = 0;
-//        while(n < 2 * radius)
-//        {
-//            if (i >= this.getDim()) i -= this.getDim();
-//            neighbor.add(cells[cRow][i]);
-//            i++;
-//            n++;
-//        }
-//
-//        //resetOGCell
-//        cRow = asker.row;
-//        cCol = asker.col;
-//
-//        //bottomRight cell
-//        cRow = (cRow + radius) < this.getDim() ? cRow + radius : cRow + radius - this.getDim();
-//        cCol = (cCol + radius) < this.getDim() ? cCol + radius : cCol + radius - this.getDim();
-//        neighbor.add(cells[cRow][cCol]);
-//
-//        //rightBar
-//        i = cRow;
-//        n = 0;
-//        while(n < 2 * radius)
-//        {
-//            if (i < 0) i += this.getDim();
-//            neighbor.add(cells[i][cCol]);
-//            i--;
-//            n++;
-//        }
-//
-//        //bottomBar
-//        i = cCol;
-//        n = 0;
-//        while(n < 2 * radius)
-//        {
-//            if (i < 0) i += this.getDim();
-//            neighbor.add(cells[cRow][i]);
-//            i--;
-//            n++;
-//        }
-
-        for (int i = cRow; i <= cRow + 2 * radius + 1; i++) {
-            for (int j = cCol; j <= cCol + 2 * radius + 1; j++) {
-                if (i == asker.row && j == asker.col) continue; // Skip the asker itself
-                int row = i % this.getDim(); // Wrap around for rows
-                int col = j % this.getDim(); // Wrap around for columns
-                if (Math.abs(row - cRow) == radius || Math.abs(col - cCol) == radius) {
-                    neighbor.add(cells[row][col]);
-                }
-            }
+        //leftBar
+        int i = cRow;
+        int n = 0;
+        while(n <= 2 * radius)
+        {
+            if (i >= this.getDim()) i -= this.getDim();
+            neighbor.add(cells[i][cCol]);
+            i++;
+            n++;
         }
+
+        //topBar
+        i = cCol;
+        n = 0;
+        while(n <= 2 * radius)
+        {
+            if (i >= this.getDim()) i -= this.getDim();
+            neighbor.add(cells[cRow][i]);
+            i++;
+            n++;
+        }
+
+        //resetOGCell
+        cRow = asker.row;
+        cCol = asker.col;
+
+        //bottomRight cell
+        cRow = (cRow + radius) < this.getDim() ? cRow + radius : cRow + radius - this.getDim();
+        cCol = (cCol + radius) < this.getDim() ? cCol + radius : cCol + radius - this.getDim();
+        neighbor.add(cells[cRow][cCol]);
+
+        //rightBar
+        i = cRow;
+        n = 0;
+        while(n <= 2 * radius)
+        {
+            if (i < 0) i += this.getDim();
+            neighbor.add(cells[i][cCol]);
+            i--;
+            n++;
+        }
+
+        //bottomBar
+        i = cCol;
+        n = 0;
+        while(n <= 2 * radius)
+        {
+            if (i < 0) i += this.getDim();
+            neighbor.add(cells[cRow][i]);
+            i--;
+            n++;
+        }
+
+//        for (int i = cRow; i <= cRow + 2 * radius + 1; i++) {
+//            for (int j = cCol; j <= cCol + 2 * radius + 1; j++) {
+//                if (i == asker.row && j == asker.col) continue; // Skip the asker itself
+//                int row = i % this.getDim(); // Wrap around for rows
+//                int col = j % this.getDim(); // Wrap around for columns
+//                if (Math.abs(row - cRow) == radius || Math.abs(col - cCol) == radius) {
+//                    neighbor.add(cells[row][col]);
+//                }
+//            }
+//        }
         return neighbor;
     }
 
@@ -144,6 +153,7 @@ public abstract class Grid extends Model {
         for (Cell[] cellRow : cells) {
             for (Cell cell : cellRow){
                 cell.observe();
+                cell.notifySubscribers();
             }
         }
     }
@@ -153,7 +163,11 @@ public abstract class Grid extends Model {
     }
 
     public void update() {
-        // ???
+        for (Cell[] cellRow : cells) {
+            for (Cell cell : cellRow){
+                cell.update();
+            }
+        }
     }
 
     public void updateLoop(int cycles) {

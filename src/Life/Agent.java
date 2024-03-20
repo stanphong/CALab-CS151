@@ -10,17 +10,16 @@ public class Agent extends Cell {
 
     public Agent() {
         status = 0;
-        ambience = 8;
+        ambience = 0;
     }
 
     @Override
     public int getStatus() {
-        return status;
+        return ambience;
     }
-
     @Override
     public Color getColor() {
-        if (this.getStatus() == 0)
+        if (this.status == 0)
             return Color.RED;
         else
             return Color.GREEN;
@@ -31,7 +30,7 @@ public class Agent extends Cell {
         int livingNeigh = 0;
         for (Cell neigh : this.neighbors)
         {
-            if (neigh.getStatus() == 1)
+            if (neigh.getColor() == Color.GREEN)
                 livingNeigh++;
         }
         this.ambience = livingNeigh;
@@ -54,7 +53,7 @@ public class Agent extends Cell {
     public void nextState() {
        if (this.status == 0)
            this.status = 1;
-        if (this.status == 1)
+       else
             this.status = 0;
     }
 

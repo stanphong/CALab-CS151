@@ -3,6 +3,7 @@ package Life;
 import CALab.Grid;
 
 import java.util.HashSet;
+import java.util.Random;
 import java.util.Set;
 
 public class Society extends Grid {
@@ -29,9 +30,15 @@ public class Society extends Grid {
     public void repopulate(boolean randomly) {
         if (randomly) {
             // randomly set the status of each cell
+            Random random = new Random();
+            int count = cells.length * cells.length * 100 % percentAlive;
             for (int i = 0; i < this.getDim(); i ++) {
                 for (int j = 0; j < this.getDim(); j ++){
-                    cells[i][j].nextState();
+                    int randomBinary = random.nextInt(2);
+                    if (randomBinary == 1){
+                        cells[i][j].nextState();
+                        count--;
+                    }
                 }
             }
         } else {
@@ -45,4 +52,5 @@ public class Society extends Grid {
         // notify subscribers
         notifySubscribers();
     }
+
 }
