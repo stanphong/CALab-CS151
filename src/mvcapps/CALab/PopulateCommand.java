@@ -12,8 +12,9 @@ public class PopulateCommand extends Command {
     }
 
     @Override
-    public void execute() throws Exception {
+    public void execute() {
         Grid grid = (Grid)model;
         grid.repopulate(true);
+        grid.observe();
     }
 }

@@ -9,8 +9,9 @@ public class ClearCommand extends Command {
         super(model);
     }
     @Override
-    public void execute() throws Exception {
+    public void execute() {
         Grid grid = (Grid)model;
         grid.repopulate(false);
+        grid.observe();
     }
 }

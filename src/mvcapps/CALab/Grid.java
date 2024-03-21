@@ -1,6 +1,5 @@
 package mvcapps.CALab;
 
-
 import java.awt.*;
 import java.util.*;
 import java.io.*;
@@ -25,44 +24,89 @@ public abstract class Grid extends Model {
     public Grid() { this(20); }
 
     protected void populate() {
-        // 1. use makeCell to fill in cells
-        // 2. use getNeighbors to set the neighbors field of each cell
+
+        for (int row = 0; row < dim; row++) {
+            for (int col = 0; col < dim; col++) {
+                Cell cell = this.makeCell(true);
+                cells[row][col] = cell;
+                cell.myGrid = this;
+                cell.row = row;
+                cell.col = col;
+            }
+        }
+
+        for(Cell[] cellRow : cells){
+            for(Cell cell : cellRow){
+                cell.neighbors = this.getNeighbors(cell, 1);
+            }
+        }
     }
 
-    // called when Populate and clear buttons are clicked
-    public void repopulate(boolean randomly) {
+    public void repopulate(boolean randomly){
         if (randomly) {
-            // randomly set the status of each cell
+            Random random = new Random();
+
+            for (int i = 0; i < this.getDim(); i ++) {
+                for (int j = 0; j < this.getDim(); j ++){
+                    int randomBinary = random.nextInt(2);
+                    if (randomBinary == 1){
+                        cells[i][j].nextState();
+                    }
+                }
+            }
         } else {
-            // set the status of each cell to 0 (dead)
+            for (int i = 0; i < this.getDim(); i ++) {
+                for (int j = 0; j < this.getDim(); j ++){
+                    cells[i][j].reset(true);
+                }
+            }
         }
-        // notify subscribers
+        notifySubscribers();
     }
 
 
     public Set<Cell> getNeighbors(Cell asker, int radius) {
-        /*
-        return the set of all cells that can be reached from the asker in radius steps.
-        If radius = 1 this is just the 8 cells touching the asker.
-        Tricky part: cells in row/col 0 or dim - 1.
-        The asker is not a neighbor of itself.
-        */
-        return null;
+        Set<Cell> neighborhood = new HashSet<Cell>();
+        int dim = this.getDim();
+        int centerRow = asker.row;
+        int centerCol = asker.col;
+
+        for (int dist = 1; dist <= radius; dist++) {
+            for (int row = centerRow - dist; row <= centerRow + dist; row++) {
+                for (int col = centerCol - dist; col <= centerCol + dist; col++) {
+                    if (row == centerRow && col == centerCol) continue;
+
+                    int actualRow = (row + dim) % dim;
+                    int actualCol = (col + dim) % dim;
+
+                    neighborhood.add(cells[actualRow][actualCol]);
+                }
+            }
+        }
+        return neighborhood;
     }
 
 
-    // cell phases:
+
 
     public void observe() {
-        // call each cell's observe method and notify subscribers
+        for(Cell[] cellRow : cells){
+            for(Cell cell : cellRow){
+                cell.observe();
+                cell.notifySubscribers();
+            }
+        }
     }
 
     public void interact() {
-        // ???
     }
 
     public void update() {
-        // ???
+        for(Cell[] cellRow : cells){
+            for(Cell cell : cellRow){
+                cell.update();
+            }
+        }
     }
 
     public void updateLoop(int cycles) {
@@ -76,4 +120,3 @@ public abstract class Grid extends Model {
         }
     }
 }
-

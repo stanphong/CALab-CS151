@@ -12,8 +12,9 @@ public class RunCommand extends Command {
     }
 
     @Override
-    public void execute() throws Exception {
+    public void execute() {
             Grid grid = (Grid) model;
             grid.updateLoop(cycles);
+
     }
 }

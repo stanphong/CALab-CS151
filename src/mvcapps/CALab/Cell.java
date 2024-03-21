@@ -2,8 +2,10 @@ package mvcapps.CALab;
 
 import java.util.*;
 import java.io.*;
+import mvcapps.mvc.*;
+import java.awt.Color;
 
-abstract class Cell implements Serializable {
+public abstract class Cell extends Publisher implements Serializable {
 
     protected int row = 0, col = 0;
     protected Set<Cell> neighbors = new HashSet<Cell>();
@@ -11,15 +13,22 @@ abstract class Cell implements Serializable {
     protected Cell partner = null;
 
 
-    // choose a random neighbor as a partner
     public void choosePartner() {
         if (partner == null && neighbors != null) {
-			/*
-			Set partner to null
-			Convert neighbors set to a local array
-			Starting at a random position in the array search for a neighbor without a partner
-			Make the first such neighbor (if any) the partner and set its partner field to this
-			*/
+            Cell[] neighborsArray = neighbors.toArray(new Cell[neighbors.size()]);
+            Random random = new Random();
+            int startIndex = random.nextInt(neighborsArray.length);
+            for (int i = 0; i < neighborsArray.length; i++) {
+                int index = (startIndex + i) % neighborsArray.length;
+                Cell potentialPartner = neighborsArray[index];
+                if (potentialPartner.partner == null) {
+
+                    partner = potentialPartner;
+
+                    partner.partner = this;
+                    break;
+                }
+            }
         }
 
     }
@@ -33,15 +42,14 @@ abstract class Cell implements Serializable {
         }
     }
 
-    // observer neighbors' states
     public abstract void observe();
-    // interact with a random neighbor
     public abstract void interact();
-    // update my state
     public abstract void update();
-    // set status to status + 1 mod whatever
     public abstract void nextState();
-    // set status to a random or initial value
     public abstract void reset(boolean randomly);
 
+
+    public abstract Color getColor();
+
+    public abstract int getStatus();
 }

@@ -41,11 +41,12 @@ public class AppPanel extends JPanel implements Subscriber, ActionListener{
         frame.setVisible(true);
     }
 
-    public void setModel(Model newModel){
+    public void setModel(Model newModel) throws Exception {
         this.model.unsubscribe(this);
         this.model = newModel;
         this.model.subscribe(this);
         view.setModel(this.model);
+        model.changed();
     }
 
 
@@ -103,8 +104,7 @@ public class AppPanel extends JPanel implements Subscriber, ActionListener{
     }
 
     @Override
-    public void update() throws Exception {
-        view.repaint();
+    public void update() {
     }
 
 }

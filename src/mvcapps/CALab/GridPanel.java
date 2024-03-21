@@ -2,6 +2,7 @@ package mvcapps.CALab;
 import mvcapps.mvc.*;
 
 import javax.swing.*;
+import java.awt.*;
 
 public class GridPanel extends AppPanel{
 
@@ -9,36 +10,39 @@ public class GridPanel extends AppPanel{
 
     public GridPanel(AppFactory factory) {
         super(factory);
+
+        JPanel run1Panel = new JPanel();
+        JPanel run50Panel = new JPanel();
+        JPanel populatePanel = new JPanel();
+        JPanel clearPanel = new JPanel();
+
         run1 = new JButton("RUN1");
         run1.addActionListener(this);
-        ControlPanel.add(run1);
 
         run50 = new JButton("RUN50");
         run50.addActionListener(this);
-        ControlPanel.add(run50);
 
         populate = new JButton("POPULATE");
         populate.addActionListener(this);
-        ControlPanel.add(populate);
 
         clear = new JButton("CLEAR");
         clear.addActionListener(this);
-        ControlPanel.add(clear);
+
+        run1Panel.add(run1);
+        run50Panel.add(run50);
+        populatePanel.add(populate);
+        clearPanel.add(clear);
+
+        run1Panel.setBackground(Color.PINK);
+        run50Panel.setBackground(Color.PINK);
+        populatePanel.setBackground(Color.PINK);
+        clearPanel.setBackground(Color.PINK);
+
+        ControlPanel.setLayout(new GridLayout(2,2));
+        ControlPanel.add(run1Panel);
+        ControlPanel.add(run50Panel);
+        ControlPanel.add(populatePanel);
+        ControlPanel.add(clearPanel);
     }
 
-    /*
-    private JButton createAndAddButton(String label) {
-        JButton button = new JButton(label);
-        button.addActionListener(this);
-        ControlPanel.add(button);
-        return button;
-    }
-
-     */
-
-    public static void main(String[] args) {
-        AppFactory factory = new GridFactory();
-        AppPanel panel = new GridPanel(factory);
-        panel.display();
-    }
 }
